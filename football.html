@@ -1680,4 +1680,2692 @@ const rev=document.getElementById('v54Reveal'),flash=document.getElementById('v5
 if(rev&&flash){new MutationObserver(ms=>ms.forEach(m=>m.attributeName==='class'&&rev.classList.contains('show')&&setTimeout(()=>{if(rev.classList.contains('show'))return;flash.classList.remove('on');void flash.offsetWidth;flash.classList.add('on')},5000))).observe(rev,{attributes:true});}
 })();
 </script>
+<!-- =========================================================
+     FOOTBALL LEGENDS V57 — STABILITY / MATCH / PACK PATCH
+     Dán ngay trước </html>
+     Không xóa các hệ thống V56 hiện tại.
+========================================================= -->
+<style id="v57-patch-style">
+/* ---------- MATCH V57 ---------- */
+.v57-match-ready .v54p{
+  will-change:left,top,transform;
+  transition:none!important;
+}
+.v57-match-ready #v54Players{
+  will-change:transform;
+  transform-origin:center center;
+}
+.v57-match-ready .v54name{
+  opacity:1!important;
+  white-space:nowrap;
+  font-size:8px!important;
+  font-weight:900!important;
+  text-shadow:
+    0 1px 3px #000,
+    0 0 5px #000;
+  pointer-events:none;
+}
+.v57-match-ready .v54p.carrier{
+  filter:drop-shadow(0 0 10px rgba(255,220,85,.95))!important;
+}
+.v57-match-ready .v57-ball-trail{
+  position:absolute;
+  width:40px;
+  height:8px;
+  border-radius:999px;
+  background:linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,.55),
+    rgba(255,220,90,.85)
+  );
+  filter:blur(2px);
+  pointer-events:none;
+  z-index:7;
+  transform-origin:right center;
+}
+.v57-action-ring{
+  position:absolute;
+  width:48px;
+  height:48px;
+  border:2px solid rgba(255,224,94,.7);
+  border-radius:50%;
+  pointer-events:none;
+  transform:translate(-50%,-50%);
+  animation:v57Ring .8s ease-out forwards;
+  z-index:30;
+}
+@keyframes v57Ring{
+  from{opacity:.9;transform:translate(-50%,-50%) scale(.4)}
+  to{opacity:0;transform:translate(-50%,-50%) scale(1.8)}
+}
+
+/* ---------- RARE REVEAL V57 ---------- */
+.v57-rare-stage{
+  position:absolute;
+  inset:0;
+  z-index:100;
+  display:none;
+  place-items:center;
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(255,255,255,.22),
+      rgba(255,210,70,.12) 25%,
+      transparent 65%
+    );
+  pointer-events:none;
+}
+.v57-rare-stage.show{
+  display:grid;
+}
+.v57-rare-stage:before,
+.v57-rare-stage:after{
+  content:"";
+  position:absolute;
+  width:180vmax;
+  height:3px;
+  background:linear-gradient(
+    90deg,
+    transparent,
+    #fff,
+    #ffe26c,
+    #fff,
+    transparent
+  );
+  box-shadow:0 0 30px #ffe26c;
+  animation:v57Beam 1s ease-out forwards;
+}
+.v57-rare-stage:before{transform:rotate(24deg)}
+.v57-rare-stage:after{transform:rotate(-24deg)}
+@keyframes v57Beam{
+  from{opacity:0;transform:scaleX(.1) rotate(24deg)}
+  30%{opacity:1}
+  to{opacity:0;transform:scaleX(1.4) rotate(24deg)}
+}
+.v57-rare-title{
+  position:relative;
+  z-index:3;
+  font-size:clamp(22px,4vw,48px);
+  font-weight:1000;
+  letter-spacing:4px;
+  text-align:center;
+  color:#fff;
+  text-shadow:
+    0 0 10px #fff,
+    0 0 30px #ffd95a,
+    0 0 70px #58cfff;
+  animation:v57Title 1s ease-out;
+}
+@keyframes v57Title{
+  from{opacity:0;transform:scale(.5)}
+  60%{opacity:1;transform:scale(1.08)}
+  to{transform:scale(1)}
+}
+
+/* ---------- PACK CARD ---------- */
+.v57-pack-card{
+  position:relative;
+  width:100%;
+  height:100%;
+  border-radius:22px;
+  overflow:hidden;
+  transform-style:preserve-3d;
+}
+.v57-pack-card:before{
+  content:"";
+  position:absolute;
+  inset:-30%;
+  background:
+    linear-gradient(
+      120deg,
+      transparent 35%,
+      rgba(255,255,255,.42) 48%,
+      transparent 60%
+    );
+  transform:translateX(-65%) rotate(8deg);
+  animation:v57CardShine 3.2s linear infinite;
+  pointer-events:none;
+  z-index:20;
+}
+@keyframes v57CardShine{
+  0%{transform:translateX(-80%) rotate(8deg)}
+  35%,100%{transform:translateX(80%) rotate(8deg)}
+}
+.v57-pack-legend{
+  box-shadow:
+    0 0 0 3px rgba(88,207,255,.9),
+    0 0 20px rgba(88,207,255,.9),
+    0 0 60px rgba(255,220,100,.65);
+}
+.v57-pack-red{
+  box-shadow:
+    0 0 0 3px rgba(255,90,105,.9),
+    0 0 28px rgba(255,70,90,.8);
+}
+.v57-hidden-rare{
+  filter:brightness(.62) saturate(.8);
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media(max-width:700px){
+  .v57-match-ready .v54name{
+    font-size:7px!important;
+  }
+}
+</style>
+
+<script id="v57-stability-engine">
+(()=>{
+'use strict';
+
+/* =========================================================
+   1. COMMON UTILITIES
+========================================================= */
+const $=id=>document.getElementById(id);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const now=()=>performance.now();
+
+function safeText(id,text){
+  const e=$(id);
+  if(e)e.textContent=text;
+}
+
+function playerPool(){
+  return Array.isArray(window.players)
+    ? window.players.filter(Boolean)
+    : [];
+}
+
+function playerNation(p){
+  return String(
+    p?.nation ||
+    p?.country ||
+    p?.nationality ||
+    'Unknown'
+  );
+}
+
+function playerImage(p){
+  return p?.img ||
+         p?.image ||
+         p?.photo ||
+         p?.avatar ||
+         '';
+}
+
+function isRare(p){
+  const o=Number(p?.ovr||0);
+  const r=String(p?.rarity||'').toLowerCase();
+  return o>=98 || r.includes('red') || r.includes('legend');
+}
+
+function isLegend(p){
+  const o=Number(p?.ovr||0);
+  const r=String(p?.rarity||'').toLowerCase();
+  return o>=99 || r.includes('legend');
+}
+
+/* =========================================================
+   2. STOP OLD MATCH LOOPS
+   V56 had multiple match engines stacked together.
+========================================================= */
+window.__V57_MATCH_ACTIVE=false;
+
+function stopOldMatchSystems(){
+  try{
+    window.V55Match?.close?.();
+  }catch(e){}
+
+  try{
+    window.V54Match?.close?.();
+  }catch(e){}
+
+  try{
+    document.body.classList.remove('v54MatchMode');
+  }catch(e){}
+}
+
+/* =========================================================
+   3. V57 MATCH ENGINE
+========================================================= */
+
+const V57={
+  running:false,
+  raf:0,
+  last:0,
+  accumulator:0,
+
+  /* Match simulation is intentionally slower and stable. */
+  fixedDt:1/60,
+
+  simTime:0,
+  matchClock:0,
+
+  owner:10,
+  score:[0,0],
+
+  decisionTimer:0,
+  commentaryTimer:0,
+
+  cameraX:50,
+  cameraY:50,
+
+  ball:{
+    x:50,
+    y:50,
+    z:.04,
+    vx:0,
+    vy:0,
+    vz:0,
+    state:'control',
+    target:null,
+    from:null
+  },
+
+  players:[],
+
+  eventCooldown:0,
+  possessionCooldown:0
+};
+
+const V57_ROLES=[
+  'GK','RB','CB','CB','LB',
+  'CDM','CM','CM','RW','CAM','ST'
+];
+
+const V57_HOME=[
+  'Ronaldo',
+  'Hakimi',
+  'Van Dijk',
+  'Saliba',
+  'Theo Hernández',
+  'Rodri',
+  'Bellingham',
+  'De Bruyne',
+  'Yamal',
+  'Messi',
+  'Mbappé'
+];
+
+const V57_AWAY=[
+  'Courtois',
+  'Walker',
+  'Rúben Dias',
+  'Bastoni',
+  'Alphonso Davies',
+  'Valverde',
+  'Pedri',
+  'Wirtz',
+  'Salah',
+  'Vinícius',
+  'Haaland'
+];
+
+/* ---------- FORMATION ---------- */
+
+function formationPosition(role,team){
+  const map={
+    GK:[50,92],
+    RB:[77,75],
+    CB:[42,80],
+    LB:[23,75],
+    CDM:[50,64],
+    CM:[38,53],
+    RW:[80,39],
+    CAM:[50,33],
+    ST:[50,21]
+  };
+
+  let p=map[role]||[50,50];
+
+  if(role==='CB'){
+    const count=V57.players.filter(
+      x=>x.role==='CB'&&x.team===team
+    ).length;
+
+    p=count===0?[42,80]:[58,80];
+  }
+
+  if(role==='CM'){
+    const count=V57.players.filter(
+      x=>x.role==='CM'&&x.team===team
+    ).length;
+
+    p=count===0?[38,53]:[62,53];
+  }
+
+  if(team===1){
+    p=[100-p[0],100-p[1]];
+  }
+
+  return p;
+}
+
+/* ---------- SETUP ---------- */
+
+function setupV57(){
+
+  V57.players=[];
+
+  for(let team=0;team<2;team++){
+
+    for(let i=0;i<11;i++){
+
+      const role=V57_ROLES[i];
+      const [x,y]=formationPosition(role,team);
+
+      V57.players.push({
+        id:`${team}-${i}`,
+        team,
+        role,
+
+        name:team===0
+          ? V57_HOME[i]
+          : V57_AWAY[i],
+
+        x,
+        y,
+
+        tx:x,
+        ty:y,
+
+        vx:0,
+        vy:0,
+
+        stamina:100,
+
+        acceleration:role==='GK'?2.0:4.0,
+        maxSpeed:role==='GK'?2.7:4.5,
+
+        action:'idle',
+
+        phase:i*.37+team*.71,
+
+        hasBall:false,
+
+        decision:0
+      });
+    }
+  }
+}
+
+/* ---------- DOM ---------- */
+
+function createV57Players(){
+
+  const layer=$('v54Players');
+  if(!layer)return;
+
+  layer.innerHTML='';
+
+  V57.players.forEach(p=>{
+
+    const d=document.createElement('div');
+
+    d.className=
+      'v54p '+
+      (p.team?'away':'home')+
+      (p.role==='GK'
+        ? (p.team?' gkAway':' gkHome')
+        :''
+      );
+
+    d.innerHTML=`
+      <div class="shadow"></div>
+      <div class="head"></div>
+      <div class="hair"></div>
+      <div class="torso"></div>
+      <div class="arm l"></div>
+      <div class="arm r"></div>
+      <div class="leg l"></div>
+      <div class="leg r"></div>
+      <div class="boot l"></div>
+      <div class="boot r"></div>
+      <div class="v54name"></div>
+    `;
+
+    d.querySelector('.v54name').textContent=p.name;
+
+    layer.appendChild(d);
+  });
+
+  document.body.classList.add('v57-match-ready');
+}
+
+/* ---------- COMMENTARY ---------- */
+
+function comment(text){
+
+  const feed=$('v54Events');
+
+  if(feed){
+
+    const item=document.createElement('div');
+
+    item.className='v54-event';
+    item.textContent=text;
+
+    feed.appendChild(item);
+
+    while(feed.children.length>7){
+      feed.children[1]?.remove();
+    }
+  }
+
+  safeText('v54Comment','🎙️ '+text);
+}
+
+/* ---------- DISTANCE ---------- */
+
+function dist(a,b){
+  return Math.hypot(
+    a.x-b.x,
+    a.y-b.y
+  );
+}
+
+function nearestOpponent(p){
+
+  let best=null;
+  let bestD=Infinity;
+
+  for(const q of V57.players){
+
+    if(q.team===p.team)continue;
+
+    const d=dist(p,q);
+
+    if(d<bestD){
+      bestD=d;
+      best=q;
+    }
+  }
+
+  return [best,bestD];
+}
+
+/* ---------- TEAM MATES ---------- */
+
+function bestPassTarget(p){
+
+  let best=null;
+  let bestScore=-Infinity;
+
+  for(const q of V57.players){
+
+    if(q.team!==p.team)continue;
+    if(q===p)continue;
+    if(q.role==='GK')continue;
+
+    const forward=
+      p.team===0
+        ? p.y-q.y
+        : q.y-p.y;
+
+    const [opp,pressure]=nearestOpponent(q);
+
+    let score=
+      forward*1.25+
+      pressure*1.6-
+      Math.abs(q.x-p.x)*.18;
+
+    if(q.role==='ST')score+=8;
+    if(q.role==='CAM')score+=5;
+    if(q.role==='RW'||q.role==='LW')score+=3;
+
+    if(opp&&pressure<5)score+=5;
+
+    if(score>bestScore){
+      bestScore=score;
+      best=q;
+    }
+  }
+
+  return best;
+}
+
+/* ---------- AI TARGETS ---------- */
+
+function updateTargets(){
+
+  const carrier=V57.players[V57.owner];
+
+  if(!carrier)return;
+
+  for(const p of V57.players){
+
+    if(p===carrier){
+
+      p.tx=p.x;
+      p.ty=p.y;
+      continue;
+    }
+
+    const base=formationPosition(
+      p.role,
+      p.team
+    );
+
+    let tx=base[0];
+    let ty=base[1];
+
+    const attackDir=p.team===0?-1:1;
+
+    /*
+      Positional play:
+      every player follows the ball a little,
+      but never abandons his role completely.
+    */
+    tx+=(V57.ball.x-50)*.16;
+    ty+=(V57.ball.y-50)*.10;
+
+    if(p.team===carrier.team){
+
+      if(p.role==='ST'){
+        ty+=attackDir*8;
+      }
+
+      if(p.role==='RW'){
+        tx+=p.team===0?7:-7;
+      }
+
+      if(p.role==='CM'){
+        ty+=attackDir*3;
+      }
+
+    }else{
+
+      /*
+        Defensive compactness.
+      */
+      tx+=(carrier.x-50)*.20;
+      ty+=(carrier.y-50)*.15;
+
+      const [opp,d]=nearestOpponent(p);
+
+      if(opp&&d<12&&p.role!=='GK'){
+        tx=opp.x;
+        ty=opp.y;
+      }
+    }
+
+    p.tx=clamp(tx,5,95);
+    p.ty=clamp(ty,5,95);
+  }
+}
+
+/* ---------- MOVEMENT ---------- */
+
+function movePlayer(p,dt){
+
+  const dx=p.tx-p.x;
+  const dy=p.ty-p.y;
+
+  const d=Math.hypot(dx,dy);
+
+  if(d<.15){
+
+    p.vx*=.80;
+    p.vy*=.80;
+
+    p.action='idle';
+
+    return;
+  }
+
+  const nx=dx/d;
+  const ny=dy/d;
+
+  const fatigue=.72+.28*(p.stamina/100);
+
+  const desiredSpeed=
+    p.maxSpeed*fatigue;
+
+  const targetVX=nx*desiredSpeed;
+  const targetVY=ny*desiredSpeed;
+
+  const accel=
+    p.acceleration*dt;
+
+  p.vx+=clamp(
+    targetVX-p.vx,
+    -accel,
+    accel
+  );
+
+  p.vy+=clamp(
+    targetVY-p.vy,
+    -accel,
+    accel
+  );
+
+  p.x=clamp(
+    p.x+p.vx*dt,
+    3,
+    97
+  );
+
+  p.y=clamp(
+    p.y+p.vy*dt,
+    3,
+    97
+  );
+
+  const speed=Math.hypot(
+    p.vx,
+    p.vy
+  );
+
+  if(speed>.75){
+    p.action=
+      speed>3.4
+        ?'sprint'
+        :'run';
+
+    p.stamina=
+      clamp(
+        p.stamina-dt*.8,
+        25,
+        100
+      );
+
+  }else{
+
+    p.action='idle';
+
+    p.stamina=
+      clamp(
+        p.stamina+dt*.35,
+        25,
+        100
+      );
+  }
+}
+
+function movementV57(dt){
+
+  for(const p of V57.players){
+
+    /*
+      Do not let goalkeeper leave the defensive zone.
+    */
+    if(p.role==='GK'){
+
+      const homeY=p.team===0?92:8;
+
+      p.tx=clamp(
+        p.tx,
+        38,
+        62
+      );
+
+      p.ty=clamp(
+        p.ty,
+        p.team===0?78:2,
+        p.team===0?98:22
+      );
+
+      if(
+        Math.abs(p.y-homeY)>18 &&
+        V57.ball.state!=='shot'
+      ){
+        p.ty=homeY;
+      }
+    }
+
+    movePlayer(p,dt);
+  }
+}
+
+/* =========================================================
+   4. REAL BALL TRAVEL
+========================================================= */
+
+function startBallTravel(from,to,type='pass'){
+
+  const dx=to.x-from.x;
+  const dy=to.y-from.y;
+  const d=Math.max(.1,Math.hypot(dx,dy));
+
+  const speed=
+    type==='shot'
+      ? 22
+      : 14;
+
+  V57.ball={
+    x:from.x,
+    y:from.y,
+    z:.15,
+
+    vx:dx/d*speed,
+    vy:dy/d*speed,
+
+    vz:type==='shot'?2.5:1.1,
+
+    state:type==='shot'
+      ?'shot'
+      :'flight',
+
+    target:to,
+    from
+  };
+}
+
+/* ---------- BALL PHYSICS ---------- */
+
+function updateBall(dt){
+
+  const b=V57.ball;
+
+  if(b.state==='control'){
+
+    const p=V57.players[V57.owner];
+
+    if(!p)return;
+
+    b.x=p.x;
+    b.y=p.y+(p.team===0?.85:-.85);
+    b.z=.06;
+
+    return;
+  }
+
+  b.vz-=9.81*dt;
+
+  b.vx*=Math.pow(.985,dt*60);
+  b.vy*=Math.pow(.985,dt*60);
+
+  b.x+=b.vx*dt;
+  b.y+=b.vy*dt;
+  b.z+=b.vz*dt;
+
+  if(b.z<.05){
+
+    b.z=.05;
+
+    if(Math.abs(b.vz)>.45){
+
+      b.vz=-b.vz*.32;
+
+    }else{
+
+      b.vz=0;
+    }
+  }
+
+  b.x=clamp(b.x,2,98);
+  b.y=clamp(b.y,2,98);
+
+  /*
+    Pass reception.
+  */
+  if(
+    b.state==='flight' &&
+    b.target
+  ){
+
+    const d=Math.hypot(
+      b.x-b.target.x,
+      b.y-b.target.y
+    );
+
+    if(d<2.3){
+
+      const receiver=b.target;
+
+      V57.owner=
+        V57.players.indexOf(receiver);
+
+      V57.ball={
+        x:receiver.x,
+        y:receiver.y,
+        z:.06,
+        vx:0,
+        vy:0,
+        vz:0,
+        state:'control',
+        target:null,
+        from:null
+      };
+
+      receiver.action='receive';
+
+      comment(
+        `⚽ ${receiver.name} nhận bóng.`
+      );
+    }
+  }
+
+  /*
+    Shot reaches goal area.
+  */
+  if(b.state==='shot'){
+
+    const goalY=
+      V57.ball.from?.team===0
+        ? 3
+        : 97;
+
+    if(
+      Math.abs(b.y-goalY)<2.8
+    ){
+
+      finishShot();
+
+    }
+  }
+}
+
+/* =========================================================
+   5. PASS
+========================================================= */
+
+function executePass(p,target){
+
+  if(!target)return;
+
+  const distance=dist(p,target);
+
+  if(distance<4)return;
+
+  startBallTravel(
+    p,
+    target,
+    'pass'
+  );
+
+  p.action='pass';
+
+  V57.possessionCooldown=.8;
+
+  comment(
+    `🎯 ${p.name} chuyền cho ${target.name}.`
+  );
+}
+
+/* =========================================================
+   6. SHOOT
+========================================================= */
+
+function executeShot(p){
+
+  if(p.role==='GK'){
+    /*
+      Absolute safety:
+      goalkeeper never shoots.
+    */
+    const mate=bestPassTarget(p);
+
+    if(mate)executePass(p,mate);
+
+    return;
+  }
+
+  const goalY=p.team===0?3:97;
+
+  const targetX=
+    clamp(
+      50+(Math.random()-.5)*16,
+      39,
+      61
+    );
+
+  const target={
+    x:targetX,
+    y:goalY
+  };
+
+  startBallTravel(
+    p,
+    target,
+    'shot'
+  );
+
+  p.action='shot';
+
+  comment(
+    `🔥 ${p.name} dứt điểm!`
+  );
+}
+
+/* ---------- SHOT RESULT ---------- */
+
+function finishShot(){
+
+  if(V57.ball.state!=='shot')return;
+
+  const shooter=V57.ball.from;
+
+  if(!shooter)return;
+
+  V57.ball.state='resolved';
+
+  const goalkeeper=
+    V57.players.find(
+      p=>
+        p.team!==shooter.team &&
+        p.role==='GK'
+    );
+
+  const shooterQuality=
+    clamp(
+      (
+        Number(
+          window.players?.find(
+            x=>x.name===shooter.name
+          )?.sho || 82
+        )
+      )/100,
+      .45,
+      1
+    );
+
+  const keeperQuality=
+    clamp(
+      (
+        Number(
+          window.players?.find(
+            x=>x.name===goalkeeper?.name
+          )?.ovr || 80
+        )
+      )/100,
+      .45,
+      1
+    );
+
+  const chance=
+    clamp(
+      .48+
+      shooterQuality*.30-
+      keeperQuality*.18,
+      .15,
+      .82
+    );
+
+  if(Math.random()<chance){
+
+    V57.score[shooter.team]++;
+
+    safeText(
+      'v54HS',
+      V57.score[0]
+    );
+
+    safeText(
+      'v54AS',
+      V57.score[1]
+    );
+
+    comment(
+      `⚽ GOAL! ${shooter.name} ghi bàn!`
+    );
+
+    createActionRing(
+      shooter.x,
+      shooter.y
+    );
+
+    /*
+      Restart from the team that conceded.
+    */
+    const restart=
+      V57.players.find(
+        p=>
+          p.team!==shooter.team &&
+          p.role==='ST'
+      ) ||
+      V57.players.find(
+        p=>
+          p.team!==shooter.team &&
+          p.role==='CM'
+      );
+
+    if(restart){
+
+      V57.owner=
+        V57.players.indexOf(restart);
+
+      V57.ball={
+        x:restart.x,
+        y:restart.y,
+        z:.06,
+        vx:0,
+        vy:0,
+        vz:0,
+        state:'control',
+        target:null,
+        from:null
+      };
+    }
+
+  }else{
+
+    if(goalkeeper){
+
+      V57.owner=
+        V57.players.indexOf(
+          goalkeeper
+        );
+
+      V57.ball={
+        x:goalkeeper.x,
+        y:goalkeeper.y,
+        z:.06,
+        vx:0,
+        vy:0,
+        vz:0,
+        state:'control',
+        target:null,
+        from:null
+      };
+
+      comment(
+        `🧤 ${goalkeeper.name} cản phá cú sút!`
+      );
+
+    }
+  }
+}
+
+/* =========================================================
+   7. DECISION ENGINE
+========================================================= */
+
+function decide(){
+
+  if(V57.possessionCooldown>0)return;
+
+  const p=
+    V57.players[V57.owner];
+
+  if(!p)return;
+
+  /*
+    GK:
+    NEVER shoot.
+  */
+  if(p.role==='GK'){
+
+    const target=bestPassTarget(p);
+
+    if(target){
+
+      executePass(
+        p,
+        target
+      );
+    }
+
+    return;
+  }
+
+  const goalDistance=
+    Math.abs(
+      p.y-
+      (p.team===0?3:97)
+    );
+
+  const [opponent,pressure]=
+    nearestOpponent(p);
+
+  const target=
+    bestPassTarget(p);
+
+  /*
+    Shot decision.
+  */
+  if(
+    goalDistance<25 &&
+    Math.random()<.22
+  ){
+
+    executeShot(p);
+    return;
+  }
+
+  /*
+    Pass under pressure.
+  */
+  if(
+    target &&
+    (
+      pressure<10 ||
+      Math.random()<.72
+    )
+  ){
+
+    executePass(
+      p,
+      target
+    );
+
+    return;
+  }
+
+  /*
+    Carry ball.
+  */
+  const direction=
+    p.team===0?-1:1;
+
+  p.tx=clamp(
+    p.x+
+    (Math.random()-.5)*5,
+    5,
+    95
+  );
+
+  p.ty=clamp(
+    p.y+
+    direction*
+    (2.5+p.stamina*.015),
+    5,
+    95
+  );
+
+  p.action='carry';
+}
+
+/* =========================================================
+   8. CAMERA
+========================================================= */
+
+function updateCamera(dt){
+
+  const carrier=
+    V57.players[V57.owner];
+
+  if(!carrier)return;
+
+  const smooth=
+    1-Math.pow(.001,dt);
+
+  V57.cameraX +=
+    (carrier.x-V57.cameraX)*
+    smooth;
+
+  V57.cameraY +=
+    (carrier.y-V57.cameraY)*
+    smooth;
+
+  const field=$('v54Field');
+  const layer=$('v54Players');
+
+  if(!field||!layer)return;
+
+  /*
+    Keep carrier close to center.
+    Do not expose the whole pitch.
+  */
+  const ox=
+    (50-V57.cameraX)*2.25;
+
+  const oy=
+    (50-V57.cameraY)*1.85;
+
+  field.style.transform=
+    `translate(-50%,-50%)
+     perspective(1250px)
+     rotateX(59deg)
+     scale(1.38)
+     translate(${ox/3}%,
+                ${oy/3}%)`;
+
+  layer.style.transform=
+    `translate3d(${ox}px,${oy}px,0)
+     scale(1.08)`;
+
+  safeText(
+    'v54Cam',
+    'FOLLOW BALL • 1/2 PITCH'
+  );
+}
+
+/* =========================================================
+   9. PLAYER RENDER
+========================================================= */
+
+function renderPlayers(){
+
+  const layer=$('v54Players');
+
+  if(!layer)return;
+
+  V57.players.forEach((p,i)=>{
+
+    const d=layer.children[i];
+
+    if(!d)return;
+
+    d.style.left=
+      (4+92*p.x/100)+'%';
+
+    d.style.top=
+      (5+90*p.y/100)+'%';
+
+    d.classList.toggle(
+      'carrier',
+      i===V57.owner
+    );
+
+    /*
+      Running animation based on actual velocity,
+      not arbitrary global movement.
+    */
+    const speed=
+      Math.hypot(
+        p.vx,
+        p.vy
+      );
+
+    const stride=
+      speed>.55
+        ? Math.sin(
+            V57.simTime*
+            (7+speed*1.8)+
+            p.phase
+          )*22
+        : 0;
+
+    const ll=d.querySelector('.leg.l');
+    const lr=d.querySelector('.leg.r');
+    const al=d.querySelector('.arm.l');
+    const ar=d.querySelector('.arm.r');
+
+    if(ll)ll.style.transform=
+      `rotate(${stride}deg)`;
+
+    if(lr)lr.style.transform=
+      `rotate(${-stride}deg)`;
+
+    if(al)al.style.transform=
+      `rotate(${-stride*.45}deg)`;
+
+    if(ar)ar.style.transform=
+      `rotate(${stride*.45}deg)`;
+
+    /*
+      Face/body direction follows movement.
+    */
+    if(speed>.1){
+
+      d.style.setProperty(
+        '--move-angle',
+        Math.atan2(
+          p.vx,
+          -p.vy
+        )+'rad'
+      );
+    }
+
+    d.style.zIndex=
+      40+
+      Math.round(p.y);
+  });
+
+  const ball=$('v54Ball');
+
+  if(ball){
+
+    ball.style.left=
+      (4+92*V57.ball.x/100)+'%';
+
+    ball.style.top=
+      (5+90*V57.ball.y/100)+'%';
+
+    ball.style.transform=
+      `translate3d(
+        -50%,
+        -50%,
+        ${V57.ball.z*110}px
+      )
+      scale(${1+V57.ball.z*.35})`;
+  }
+}
+
+/* =========================================================
+   10. ACTION EFFECT
+========================================================= */
+
+function createActionRing(x,y){
+
+  const layer=$('v54Players');
+
+  if(!layer)return;
+
+  const r=document.createElement('div');
+
+  r.className='v57-action-ring';
+
+  r.style.left=
+    (4+92*x/100)+'%';
+
+  r.style.top=
+    (5+90*y/100)+'%';
+
+  layer.appendChild(r);
+
+  setTimeout(
+    ()=>r.remove(),
+    900
+  );
+}
+
+/* =========================================================
+   11. FIXED TIMESTEP LOOP
+========================================================= */
+
+function simulate(dt){
+
+  V57.simTime+=dt;
+
+  V57.matchClock+=
+    dt*1.35;
+
+  V57.decisionTimer-=dt;
+  V57.commentaryTimer-=dt;
+  V57.possessionCooldown-=dt;
+
+  if(V57.decisionTimer<=0){
+
+    V57.decisionTimer=
+      .85+
+      Math.random()*.35;
+
+    if(
+      V57.ball.state==='control'
+    ){
+      decide();
+    }
+  }
+
+  updateTargets();
+  movementV57(dt);
+  updateBall(dt);
+}
+
+function render(){
+
+  updateCamera(
+    V57.fixedDt
+  );
+
+  renderPlayers();
+
+  const sec=
+    Math.floor(
+      V57.matchClock
+    );
+
+  safeText(
+    'v54Clock',
+    String(
+      Math.floor(sec/60)
+    ).padStart(2,'0')+
+    ':'+
+    String(
+      sec%60
+    ).padStart(2,'0')
+  );
+
+  /*
+    Commentary deliberately slower
+    than simulation.
+  */
+  if(
+    V57.commentaryTimer<=0
+  ){
+
+    V57.commentaryTimer=
+      5.5+
+      Math.random()*3;
+
+    if(
+      V57.ball.state==='control'
+    ){
+
+      const p=
+        V57.players[V57.owner];
+
+      if(p){
+
+        const lines=[
+          `🎙️ ${p.name} đang kiểm soát bóng.`,
+          `🎙️ ${p.name} tìm khoảng trống.`,
+          `🎙️ Hàng tiền vệ đang giữ cự ly.`,
+          `🎙️ Hai đội đang tổ chức lại đội hình.`
+        ];
+
+        comment(
+          lines[
+            Math.floor(
+              Math.random()*lines.length
+            )
+          ]
+        );
+      }
+    }
+  }
+}
+
+function frame(ts){
+
+  if(!V57.running)return;
+
+  const realDt=
+    Math.min(
+      .10,
+      (ts-V57.last)/1000
+    );
+
+  V57.last=ts;
+
+  V57.accumulator+=realDt;
+
+  /*
+    Simulation is always 60Hz.
+    Rendering can be 60/120/144Hz.
+  */
+  while(
+    V57.accumulator>=
+    V57.fixedDt
+  ){
+
+    simulate(
+      V57.fixedDt
+    );
+
+    V57.accumulator-=
+      V57.fixedDt;
+  }
+
+  render();
+
+  V57.raf=
+    requestAnimationFrame(frame);
+}
+
+/* =========================================================
+   12. START / STOP
+========================================================= */
+
+function startV57(){
+
+  stopV57();
+  stopOldMatchSystems();
+
+  setupV57();
+  createV57Players();
+
+  V57.score=[0,0];
+
+  V57.owner=10;
+
+  const p=
+    V57.players[V57.owner];
+
+  V57.ball={
+    x:p.x,
+    y:p.y,
+    z:.06,
+    vx:0,
+    vy:0,
+    vz:0,
+    state:'control',
+    target:null,
+    from:null
+  };
+
+  V57.simTime=0;
+  V57.matchClock=0;
+  V57.accumulator=0;
+  V57.decisionTimer=.5;
+  V57.commentaryTimer=1.5;
+  V57.cameraX=p.x;
+  V57.cameraY=p.y;
+
+  safeText('v54HS','0');
+  safeText('v54AS','0');
+
+  const feed=$('v54Events');
+
+  if(feed){
+    feed.innerHTML=
+      '<b>LIVE MATCH • V57 ENGINE</b>';
+  }
+
+  safeText(
+    'v54Comment',
+    '🎙️ Trận đấu bắt đầu.'
+  );
+
+  const match=$('v54Match');
+
+  if(match){
+
+    match.classList.add('show');
+
+    match.setAttribute(
+      'aria-hidden',
+      'false'
+    );
+  }
+
+  V57.running=true;
+  window.__V57_MATCH_ACTIVE=true;
+
+  V57.last=performance.now();
+
+  V57.raf=
+    requestAnimationFrame(frame);
+}
+
+function stopV57(){
+
+  V57.running=false;
+
+  if(V57.raf){
+
+    cancelAnimationFrame(
+      V57.raf
+    );
+
+    V57.raf=0;
+  }
+
+  window.__V57_MATCH_ACTIVE=false;
+}
+
+function closeV57(){
+
+  stopV57();
+
+  const match=$('v54Match');
+
+  if(match){
+
+    match.classList.remove('show');
+
+    match.setAttribute(
+      'aria-hidden',
+      'true'
+    );
+  }
+}
+
+/*
+  Capture match buttons before older
+  document handlers.
+*/
+document.addEventListener(
+  'click',
+  e=>{
+
+    const b=
+      e.target.closest?.(
+        '[data-page="match"],' +
+        '[data-go="match"],' +
+        '#playMatch,'+
+        '#startMatch,'+
+        '[data-action="match"]'
+      );
+
+    if(!b)return;
+
+    e.preventDefault();
+    e.stopImmediatePropagation();
+
+    startV57();
+
+  },
+  true
+);
+
+$('v54Exit')?.addEventListener(
+  'click',
+  e=>{
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    closeV57();
+  },
+  true
+);
+
+window.addEventListener(
+  'keydown',
+  e=>{
+
+    if(e.key==='Escape'){
+      closeV57();
+    }
+  }
+);
+
+window.V57Match={
+  start:startV57,
+  close:closeV57
+};
+
+
+/* =========================================================
+   13. PACK V57
+========================================================= */
+
+const PACK={
+  queue:[],
+  index:0,
+  busy:false,
+  opened:false
+};
+
+const nations=[
+  ['🇨🇻','CABO VERDE'],
+  ['🇵🇹','PORTUGAL'],
+  ['🇦🇷','ARGENTINA'],
+  ['🇧🇷','BRAZIL'],
+  ['🇫🇷','FRANCE'],
+  ['🇪🇸','SPAIN'],
+  ['🏴','ENGLAND'],
+  ['🇩🇪','GERMANY'],
+  ['🇮🇹','ITALY'],
+  ['🇳🇱','NETHERLANDS'],
+  ['🇧🇪','BELGIUM'],
+  ['🇺🇾','URUGUAY'],
+  ['🇯🇵','JAPAN'],
+  ['🇰🇷','KOREA'],
+  ['🇲🇦','MOROCCO']
+];
+
+const positions=[
+  'GK','RB','LB','CB',
+  'CDM','CM','CAM',
+  'RW','LW','CF','ST'
+];
+
+function randomPlayer(){
+
+  const pool=
+    playerPool();
+
+  if(!pool.length)return null;
+
+  return pool[
+    Math.floor(
+      Math.random()*pool.length
+    )
+  ];
+}
+
+function makeQueue(n){
+
+  const result=[];
+
+  for(let i=0;i<n;i++){
+
+    const p=randomPlayer();
+
+    if(p){
+      result.push(p);
+    }
+  }
+
+  return result;
+}
+
+/* ---------- CARD ---------- */
+
+function packCard(p,hidden=false){
+
+  const wrapper=
+    document.createElement('div');
+
+  wrapper.className=
+    'v54-stack-card';
+
+  const card=
+    document.createElement('div');
+
+  const rare=
+    isRare(p);
+
+  const legend=
+    isLegend(p);
+
+  card.className=
+    'v54-card '+
+    (legend
+      ?'v57-pack-legend'
+      :rare
+        ?'v57-pack-red'
+        :''
+    );
+
+  /*
+    Rare cards stay visually hidden until
+    the reveal sequence is complete.
+  */
+  if(hidden&&rare){
+    card.classList.add(
+      'v57-hidden-rare'
+    );
+  }
+
+  const img=
+    playerImage(p);
+
+  card.innerHTML=`
+    <div class="sideRail l"></div>
+    <div class="sideRail r"></div>
+    <div class="shine"></div>
+
+    <div class="ct">
+
+      <div>
+        <span class="v54-ovr">
+          ${p.ovr||0}
+        </span>
+
+        <span class="v54-pos">
+          ${p.pos||''}
+        </span>
+      </div>
+
+      <div class="v54-portrait">
+
+        ${
+          img
+          ? `<img
+              src="${img}"
+              alt="${p.name||''}"
+              draggable="false"
+            >`
+          : `<div style="
+              font-size:66px;
+              opacity:.28
+            ">⚽</div>`
+        }
+
+      </div>
+
+      <div class="v54-cardname">
+        ${p.name||'PLAYER'}
+      </div>
+
+      <div class="v54-cardmeta">
+        ${playerNation(p)}
+      </div>
+
+    </div>
+  `;
+
+  wrapper.appendChild(card);
+
+  return wrapper;
+}
+
+/* ---------- PACK STACK ---------- */
+
+function renderPack(){
+
+  const stack=$('v54Stack');
+
+  if(!stack)return;
+
+  stack.innerHTML='';
+
+  const remain=
+    PACK.queue.length-
+    PACK.index;
+
+  if(remain<=0){
+
+    safeText(
+      'v54Hint',
+      'PACK HOÀN TẤT'
+    );
+
+    safeText(
+      'v54PackFooter',
+      'ALL CARDS REVEALED'
+    );
+
+    stack.classList.remove('show');
+
+    return;
+  }
+
+  const visible=
+    Math.min(6,remain);
+
+  /*
+    Furthest card first.
+    Top card last = highest z-index.
+  */
+  for(
+    let depth=visible-1;
+    depth>=0;
+    depth--
+  ){
+
+    const p=
+      PACK.queue[
+        PACK.index+depth
+      ];
+
+    const card=
+      packCard(
+        p,
+        depth>0
+      );
+
+    card.style.zIndex=
+      100-depth;
+
+    card.style.transform=
+      `translate(
+        ${depth*6}px,
+        ${depth*7}px
+      )
+      scale(
+        ${1-depth*.018}
+      )
+      rotateZ(
+        ${depth%2?1.6:-1.6}deg
+      )`;
+
+    if(depth>0){
+
+      card.style.filter=
+        `brightness(
+          ${1-depth*.07}
+        )`;
+
+      card.style.pointerEvents=
+        'none';
+    }
+
+    stack.appendChild(card);
+  }
+
+  stack.classList.add('show');
+
+  safeText(
+    'v54Hint',
+    'GIỮ VÀ KÉO LÁ TRÊN CÙNG'
+  );
+
+  safeText(
+    'v54PackFooter',
+    `LÁ ${PACK.index+1} / ${PACK.queue.length}`
+  );
+
+  bindPackTop();
+}
+
+/* ---------- DRAG ---------- */
+
+function bindPackTop(){
+
+  const stack=$('v54Stack');
+
+  const el=
+    stack?.lastElementChild
+      ?.firstElementChild;
+
+  if(!el)return;
+
+  let active=false;
+  let sx=0;
+  let sy=0;
+  let dx=0;
+  let dy=0;
+  let pointerId=null;
+
+  function down(e){
+
+    if(PACK.busy)return;
+
+    active=true;
+
+    pointerId=e.pointerId;
+
+    sx=e.clientX;
+    sy=e.clientY;
+
+    dx=0;
+    dy=0;
+
+    el.style.transition='none';
+
+    el.setPointerCapture?.(
+      pointerId
+    );
+
+    e.preventDefault();
+  }
+
+  function move(e){
+
+    if(
+      !active ||
+      e.pointerId!==pointerId
+    )return;
+
+    dx=e.clientX-sx;
+    dy=e.clientY-sy;
+
+    const distance=
+      Math.hypot(dx,dy);
+
+    const rotate=
+      clamp(
+        dx*.07,
+        -18,
+        18
+      );
+
+    el.style.transform=
+      `translate3d(
+        ${dx}px,
+        ${dy}px,
+        0
+      )
+      rotateZ(${rotate}deg)
+      rotateY(${dx*.025}deg)
+      rotateX(${-dy*.018}deg)`;
+
+    /*
+      Small elastic resistance.
+    */
+    if(distance>130){
+      el.style.filter=
+        'brightness(1.15)';
+    }
+
+    e.preventDefault();
+  }
+
+  function up(e){
+
+    if(
+      !active ||
+      e.pointerId!==pointerId
+    )return;
+
+    active=false;
+
+    el.releasePointerCapture?.(
+      pointerId
+    );
+
+    const distance=
+      Math.hypot(dx,dy);
+
+    if(distance<75){
+
+      el.style.transition=
+        'transform .28s cubic-bezier(.2,.8,.2,1)';
+
+      el.style.transform='';
+
+      return;
+    }
+
+    /*
+      Throw card away.
+    */
+    el.style.transition=
+      'transform .55s cubic-bezier(.16,.8,.25,1),opacity .4s';
+
+    el.style.transform=
+      `translate3d(
+        ${dx*2.5}px,
+        ${dy*2.5}px,
+        0
+      )
+      rotateZ(${dx*.12}deg)`;
+
+    el.style.opacity='0';
+
+    setTimeout(
+      revealPackCard,
+      500
+    );
+
+    e.preventDefault();
+  }
+
+  el.onpointerdown=down;
+  el.onpointermove=move;
+  el.onpointerup=up;
+  el.onpointercancel=up;
+}
+
+/* ---------- FLASH ---------- */
+
+function rareFlash(){
+
+  const f=$('v54RareFlash');
+
+  if(!f)return;
+
+  f.classList.remove('on');
+
+  void f.offsetWidth;
+
+  f.classList.add('on');
+
+  /*
+    Extra V57 particles.
+  */
+  const root=$('v54Pack');
+
+  if(root){
+
+    for(
+      let i=0;
+      i<42;
+      i++
+    ){
+
+      const p=
+        document.createElement('i');
+
+      p.className=
+        'v55-pack-particle';
+
+      const a=
+        Math.random()*
+        Math.PI*2;
+
+      const r=
+        100+
+        Math.random()*350;
+
+      p.style.left='50%';
+      p.style.top='50%';
+
+      p.style.setProperty(
+        '--dx',
+        Math.cos(a)*r+'px'
+      );
+
+      p.style.setProperty(
+        '--dy',
+        Math.sin(a)*r+'px'
+      );
+
+      root.appendChild(p);
+
+      setTimeout(
+        ()=>p.remove(),
+        1000
+      );
+    }
+  }
+}
+
+/* ---------- RARE SEQUENCE ---------- */
+
+async function rareSequence(p){
+
+  PACK.busy=true;
+
+  const reveal=
+    $('v54Reveal');
+
+  if(!reveal){
+
+    PACK.busy=false;
+    return;
+  }
+
+  /*
+    Stage appears BEFORE the card.
+  */
+  reveal.classList.add('show');
+
+  let stage=
+    reveal.querySelector(
+      '.v57-rare-stage'
+    );
+
+  if(!stage){
+
+    stage=
+      document.createElement('div');
+
+    stage.className=
+      'v57-rare-stage';
+
+    stage.innerHTML=
+      `<div class="v57-rare-title">
+        ✦ RARE PLAYER DISCOVERY ✦
+      </div>`;
+
+    reveal.appendChild(stage);
+  }
+
+  stage.classList.add('show');
+
+  rareFlash();
+
+  await new Promise(
+    r=>setTimeout(r,700)
+  );
+
+  const nationBox=
+    $('v54Nation');
+
+  const posBox=
+    $('v54Position');
+
+  /*
+    Nation roulette.
+    Starts at Cabo Verde as requested.
+  */
+  if(nationBox){
+
+    nationBox.textContent=
+      '🇨🇻 CABO VERDE';
+  }
+
+  if(posBox){
+
+    posBox.textContent=
+      '—';
+  }
+
+  const targetNation=
+    playerNation(p)
+      .toUpperCase();
+
+  let nationIndex=
+    nations.findIndex(
+      n=>
+        n[1]===
+        targetNation
+    );
+
+  if(nationIndex<0){
+    nationIndex=1;
+  }
+
+  /*
+    ×50 rapid scan.
+  */
+  for(
+    let i=0;
+    i<50;
+    i++
+  ){
+
+    if(nationBox){
+
+      const n=
+        nations[
+          i%nations.length
+        ];
+
+      nationBox.textContent=
+        n[0]+' '+n[1];
+    }
+
+    await new Promise(
+      r=>setTimeout(r,50)
+    );
+  }
+
+  if(nationBox){
+
+    nationBox.textContent=
+      nations[nationIndex][0]+
+      ' '+
+      nations[nationIndex][1];
+  }
+
+  /*
+    Position roulette.
+  */
+  const targetPos=
+    String(
+      p.pos||
+      'CM'
+    ).toUpperCase();
+
+  let posIndex=
+    positions.indexOf(
+      targetPos
+    );
+
+  if(posIndex<0)posIndex=5;
+
+  for(
+    let i=0;
+    i<40;
+    i++
+  ){
+
+    if(posBox){
+
+      posBox.textContent=
+        positions[
+          i%positions.length
+        ];
+    }
+
+    await new Promise(
+      r=>setTimeout(r,50)
+    );
+  }
+
+  if(posBox){
+
+    posBox.textContent=
+      targetPos;
+  }
+
+  /*
+    Player sees result for 2 seconds.
+  */
+  await new Promise(
+    r=>setTimeout(r,2000)
+  );
+
+  /*
+    Fade information.
+  */
+  reveal.classList.remove(
+    'show'
+  );
+
+  stage.classList.remove(
+    'show'
+  );
+
+  await new Promise(
+    r=>setTimeout(r,500)
+  );
+
+  /*
+    FINAL reveal.
+  */
+  showFinalCard(p);
+
+  await new Promise(
+    r=>setTimeout(r,1600)
+  );
+
+  PACK.busy=false;
+
+  renderPack();
+}
+
+/* ---------- FINAL CARD ---------- */
+
+function showFinalCard(p){
+
+  const reveal=
+    $('v54Reveal');
+
+  if(!reveal)return;
+
+  reveal.innerHTML='';
+
+  const card=
+    packCard(
+      p,
+      false
+    );
+
+  card.style.width=
+    '250px';
+
+  card.style.height=
+    '352px';
+
+  card.style.transform=
+    'scale(1.05)';
+
+  reveal.appendChild(card);
+
+  reveal.classList.add(
+    'show'
+  );
+
+  rareFlash();
+
+  setTimeout(
+    ()=>{
+      reveal.classList.remove(
+        'show'
+      );
+    },
+    1400
+  );
+}
+
+/* ---------- REVEAL ---------- */
+
+function revealPackCard(){
+
+  if(PACK.busy)return;
+
+  const p=
+    PACK.queue[
+      PACK.index
+    ];
+
+  if(!p)return;
+
+  PACK.index++;
+
+  if(isRare(p)){
+
+    rareSequence(p);
+
+  }else{
+
+    PACK.busy=true;
+
+    setTimeout(
+      ()=>{
+        PACK.busy=false;
+        renderPack();
+      },
+      180
+    );
+  }
+}
+
+/* ---------- OPEN PACK ---------- */
+
+function openPackV57(
+  count,
+  cost
+){
+
+  let coins=
+    Number(
+      localStorage.getItem(
+        'footballLegendsCoins'
+      )||150000
+    );
+
+  if(!Number.isFinite(coins)){
+    coins=150000;
+  }
+
+  if(coins<cost){
+
+    alert(
+      'Không đủ coins.'
+    );
+
+    return;
+  }
+
+  const queue=
+    makeQueue(count);
+
+  if(!queue.length){
+
+    alert(
+      'Chưa có dữ liệu cầu thủ.'
+    );
+
+    return;
+  }
+
+  coins-=cost;
+
+  localStorage.setItem(
+    'footballLegendsCoins',
+    String(coins)
+  );
+
+  document
+    .querySelectorAll(
+      '[id*="Coins"],#coins'
+    )
+    .forEach(
+      e=>{
+        if(e){
+          e.textContent=
+            coins.toLocaleString(
+              'vi-VN'
+            );
+        }
+      }
+    );
+
+  PACK.queue=queue;
+  PACK.index=0;
+  PACK.busy=false;
+  PACK.opened=false;
+
+  const pack=
+    $('v54Pack');
+
+  if(pack){
+
+    pack.classList.add(
+      'show'
+    );
+
+    pack.setAttribute(
+      'aria-hidden',
+      'false'
+    );
+  }
+
+  const bag=
+    $('v54Bag');
+
+  if(bag){
+
+    bag.style.display='grid';
+
+    bag.classList.remove(
+      'v55-torn',
+      'rip'
+    );
+  }
+
+  $('v54Stack')
+    ?.classList
+    .remove('show');
+
+  $('v54Reveal')
+    ?.classList
+    .remove('show');
+
+  safeText(
+    'v54Hint',
+    'ẤN VÀO TÚI ĐỂ XÉ'
+  );
+
+  safeText(
+    'v54PackFooter',
+    `PACK ×${count}`
+  );
+}
+
+/* ---------- TEAR ---------- */
+
+function tearPackV57(){
+
+  if(
+    PACK.opened||
+    PACK.busy
+  )return;
+
+  PACK.opened=true;
+  PACK.busy=true;
+
+  const bag=
+    $('v54Bag');
+
+  if(!bag){
+
+    PACK.busy=false;
+    return;
+  }
+
+  bag.classList.add(
+    'v55-torn',
+    'rip'
+  );
+
+  safeText(
+    'v54Hint',
+    '✂️ ĐANG XÉ TÚI…'
+  );
+
+  rareFlash();
+
+  setTimeout(
+    ()=>{
+      bag.style.display='none';
+
+      PACK.busy=false;
+
+      renderPack();
+    },
+    800
+  );
+}
+
+/*
+  Capture shop buttons before
+  legacy pack handlers.
+*/
+document.addEventListener(
+  'click',
+  e=>{
+
+    const b=
+      e.target.closest?.(
+        '#v47Buy5,'+
+        '#v47Buy50,'+
+        '#v34Buy5,'+
+        '#v34Buy50,'+
+        '#v46Buy5,'+
+        '#v46Buy50,'+
+        '[data-v54-pack]'
+      );
+
+    if(!b)return;
+
+    e.preventDefault();
+    e.stopImmediatePropagation();
+
+    const fifty=
+      b.id.toLowerCase()
+        .includes('50');
+
+    openPackV57(
+      fifty?50:5,
+      fifty?100000:10000
+    );
+
+  },
+  true
+);
+
+$('v54Bag')?.addEventListener(
+  'click',
+  e=>{
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    tearPackV57();
+  },
+  true
+);
+
+$('v54PackClose')?.addEventListener(
+  'click',
+  e=>{
+    PACK.busy=false;
+    PACK.queue=[];
+    PACK.index=0;
+
+    $('v54Pack')
+      ?.classList
+      .remove('show');
+  },
+  true
+);
+
+window.V57Pack={
+  open5:
+    ()=>openPackV57(
+      5,
+      10000
+    ),
+
+  open50:
+    ()=>openPackV57(
+      50,
+      100000
+    )
+};
+
+/* =========================================================
+   14. STARTUP
+========================================================= */
+
+function bootV57(){
+
+  /*
+    Ensure existing players/squad remain visible.
+  */
+  try{
+    window.renderPlayers?.();
+    window.renderSquad?.();
+    window.renderFilters?.();
+    window.renderSide?.();
+  }catch(e){}
+
+  /*
+    Keep card renderer enhancements.
+  */
+  document
+    .querySelectorAll(
+      '.card'
+    )
+    .forEach(
+      c=>{
+        const o=
+          Number(
+            c.querySelector(
+              '.ovr'
+            )?.textContent||0
+          );
+
+        if(o>=98){
+          c.classList.add(
+            'v47-98'
+          );
+        }
+      }
+    );
+}
+
+if(
+  document.readyState===
+  'loading'
+){
+  document.addEventListener(
+    'DOMContentLoaded',
+    bootV57,
+    {once:true}
+  );
+}else{
+  bootV57();
+}
+
+})();
+</script>
 </html>
